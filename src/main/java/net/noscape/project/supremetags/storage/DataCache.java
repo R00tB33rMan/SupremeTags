@@ -1,10 +1,12 @@
 package net.noscape.project.supremetags.storage;
 
+import lombok.Getter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DataCache {
 
+    @Getter
     private static final Map<String, String> cache = new ConcurrentHashMap<>();
 
     public static String getCachedData(String key) {
@@ -21,9 +23,5 @@ public class DataCache {
 
     public static void clearCache() {
         cache.clear();
-    }
-
-    public static Map<String, String> getCache() {
-        return cache;
     }
 }

@@ -6,7 +6,11 @@ import dev.lone.itemsadder.api.CustomStack;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.md_5.bungee.api.ChatColor;
 import net.noscape.project.supremetags.SupremeTags;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -14,9 +18,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.awt.Color;
 import java.lang.reflect.Field;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -25,11 +26,11 @@ import java.util.stream.Collectors;
 
 public class Utils {
 
-    private static Pattern p1 = Pattern.compile("\\{#([0-9A-Fa-f]{6})\\}");
-    private static Pattern p2 = Pattern.compile("&#([A-Fa-f0-9]){6}");
-    private static Pattern p3 = Pattern.compile("#([A-Fa-f0-9]){6}");
-    private static Pattern p4 = Pattern.compile("<#([A-Fa-f0-9])>{6}");
-    private static Pattern p5 = Pattern.compile("<#&([A-Fa-f0-9])>{6}");
+    private static final Pattern p1 = Pattern.compile("\\{#([0-9A-Fa-f]{6})}");
+    private static final Pattern p2 = Pattern.compile("&#([A-Fa-f0-9]){6}");
+    private static final Pattern p3 = Pattern.compile("#([A-Fa-f0-9]){6}");
+    private static final Pattern p4 = Pattern.compile("<#([A-Fa-f0-9])>{6}");
+    private static final Pattern p5 = Pattern.compile("<#&([A-Fa-f0-9])>{6}");
 
     public static String format(String message) {
         if (isVersionLessThan("1.16")) {
@@ -160,15 +161,15 @@ public class Utils {
         return lore.stream().map(Utils::format).collect(Collectors.toList());
     }
 
-    private static Pattern rgbPat = Pattern.compile("(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6})\\b|(?:rgb|hsl)a?\\([^\\)]*\\)");
+    private static final Pattern rgbPat = Pattern.compile("(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6})\\b|(?:rgb|hsl)a?\\([^\\)]*\\)");
     public static String getRGB(String msg) {
         String temp = msg;
         try {
 
             String status = "none";
-            String r = "";
-            String g = "";
-            String b = "";
+            StringBuilder r = new StringBuilder();
+            StringBuilder g = new StringBuilder();
+            StringBuilder b = new StringBuilder();
             Matcher match = rgbPat.matcher(msg);
             while (match.find()) {
                 String color = msg.substring(match.start(), match.end());
@@ -191,13 +192,13 @@ public class Utils {
                         default:
                             switch (status) {
                                 case "r":
-                                    r = r + character;
+                                    r.append(character);
                                     continue;
                                 case "g":
-                                    g = g + character;
+                                    g.append(character);
                                     continue;
                                 case "b":
-                                    b = b + character;
+                                    b.append(character);
                                     continue;
                             }
                             break;
@@ -205,12 +206,12 @@ public class Utils {
 
 
                 }
-                b = b.replace(")", "");
-                Color col = new Color(Integer.parseInt(r), Integer.parseInt(g), Integer.parseInt(b));
+                b = new StringBuilder(b.toString().replace(")", ""));
+                Color col = new Color(Integer.parseInt(r.toString()), Integer.parseInt(g.toString()), Integer.parseInt(b.toString()));
                 temp = temp.replaceFirst("(?:#|0x)(?:[a-f0-9]{3}|[a-f0-9]{6})\\b|(?:rgb|hsl)a?\\([^\\)]*\\)", ChatColor.of(col) + "");
-                r = "";
-                g = "";
-                b = "";
+                r = new StringBuilder();
+                g = new StringBuilder();
+                b = new StringBuilder();
                 status = "none";
             }
         } catch (Exception e) {
@@ -263,5 +264,4 @@ public class Utils {
         skull.setItemMeta(skullMeta);
         return skull;
     }
-
 }

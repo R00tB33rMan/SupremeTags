@@ -22,7 +22,7 @@ import static net.noscape.project.supremetags.utils.Utils.removePerm;
 public class Tags implements CommandExecutor {
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String @NotNull [] args) {
 
         String reload = SupremeTags.getInstance().getConfig().getString("messages.reload");
         String noperm = SupremeTags.getInstance().getConfig().getString("messages.no-permission");
@@ -30,7 +30,7 @@ public class Tags implements CommandExecutor {
         String commanddisabled = SupremeTags.getInstance().getConfig().getString("messages.tag-command-disabled");
         String invalidtag = SupremeTags.getInstance().getConfig().getString("messages.invalid-tag");
 
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             if (cmd.getName().equalsIgnoreCase("tags")) {
                 if (args.length == 0) {
                     sendHelp(sender);
@@ -104,8 +104,6 @@ public class Tags implements CommandExecutor {
             }
             return true;
         }
-
-        Player player = (Player) sender;
 
         if (cmd.getName().equalsIgnoreCase("tags")) {
             if (args.length == 0) {

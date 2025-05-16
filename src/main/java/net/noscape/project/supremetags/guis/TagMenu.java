@@ -19,14 +19,22 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.potion.PotionEffectType;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
-import static net.noscape.project.supremetags.utils.Utils.*;
+import static net.noscape.project.supremetags.utils.Utils.addPerm;
+import static net.noscape.project.supremetags.utils.Utils.color;
+import static net.noscape.project.supremetags.utils.Utils.createSkull;
+import static net.noscape.project.supremetags.utils.Utils.format;
+import static net.noscape.project.supremetags.utils.Utils.getItemWithIA;
+import static net.noscape.project.supremetags.utils.Utils.hasAmount;
+import static net.noscape.project.supremetags.utils.Utils.isVersionLessThan;
+import static net.noscape.project.supremetags.utils.Utils.msgPlayer;
+import static net.noscape.project.supremetags.utils.Utils.replacePlaceholders;
+import static net.noscape.project.supremetags.utils.Utils.take;
 
 public class TagMenu extends Paged {
 
@@ -60,7 +68,7 @@ public class TagMenu extends Paged {
         String insufficient = SupremeTags.getInstance().getConfig().getString("messages.insufficient-funds");
         String unlocked = SupremeTags.getInstance().getConfig().getString("messages.tag-unlocked");
 
-        if (e.getCurrentItem().getType().equals(Material.valueOf(Objects.requireNonNull(SupremeTags.getInstance().getConfig().getString("gui.layout.glass-material")).toUpperCase()))) {
+        if (Objects.requireNonNull(e.getCurrentItem()).getType().equals(Material.valueOf(Objects.requireNonNull(SupremeTags.getInstance().getConfig().getString("gui.layout.glass-material")).toUpperCase()))) {
             e.setCancelled(true);
         }
 
@@ -98,7 +106,7 @@ public class TagMenu extends Paged {
                             menuUtil.setIdentifier(tagevent.getTag());
 
                             if (SupremeTags.getInstance().getConfig().getBoolean("settings.gui-messages")) {
-                                msgPlayer(player, SupremeTags.getInstance().getConfig().getString("messages.tag-select-message").replaceAll("%identifier%", identifier).replaceAll("%tag%", SupremeTags.getInstance().getTagManager().getTag(identifier).getTag()));
+                                msgPlayer(player, Objects.requireNonNull(SupremeTags.getInstance().getConfig().getString("messages.tag-select-message")).replaceAll("%identifier%", identifier).replaceAll("%tag%", SupremeTags.getInstance().getTagManager().getTag(identifier).getTag()));
                             }
                         } else {
                             msgPlayer(player, SupremeTags.getInstance().getConfig().getString("messages.locked-tag"));
@@ -117,13 +125,13 @@ public class TagMenu extends Paged {
                             menuUtil.setIdentifier(tagevent.getTag());
 
                             if (SupremeTags.getInstance().getConfig().getBoolean("settings.gui-messages")) {
-                                msgPlayer(player, SupremeTags.getInstance().getConfig().getString("messages.tag-select-message").replace("%identifier%", identifier).replaceAll("%tag%", SupremeTags.getInstance().getTagManager().getTag(identifier).getTag()));
+                                msgPlayer(player, Objects.requireNonNull(SupremeTags.getInstance().getConfig().getString("messages.tag-select-message")).replace("%identifier%", identifier).replaceAll("%tag%", SupremeTags.getInstance().getTagManager().getTag(identifier).getTag()));
                             }
                         }
                     } else {
                         double cost = t.getCost();
 
-                        // check if they have the right amount of money to buy etc....
+                        // check if they have the right amount of money to buy, etc...
                         if (hasAmount(player, cost)) {
                             // give them the tag
 
@@ -134,10 +142,10 @@ public class TagMenu extends Paged {
 
                             take(player, cost);
                             addPerm(player, t.getPermission());
-                            msgPlayer(player, unlocked.replaceAll("%identifier%", t.getIdentifier()).replaceAll("%tag%", SupremeTags.getInstance().getTagManager().getTag(identifier).getTag()));
+                            msgPlayer(player, Objects.requireNonNull(unlocked).replaceAll("%identifier%", t.getIdentifier()).replaceAll("%tag%", SupremeTags.getInstance().getTagManager().getTag(identifier).getTag()));
                             super.open();
                         } else {
-                            msgPlayer(player, insufficient.replaceAll("%cost%", String.valueOf(t.getCost())));
+                            msgPlayer(player, Objects.requireNonNull(insufficient).replaceAll("%cost%", String.valueOf(t.getCost())));
                         }
                     }
                 }
@@ -279,8 +287,6 @@ public class TagMenu extends Paged {
                     material = "NAME_TAG";
                 }
 
-                assert permission != null;
-
                 ItemStack tagItem;
                 ItemMeta tagMeta;
                 NBTItem nbt;
@@ -305,20 +311,6 @@ public class TagMenu extends Paged {
 
                 nbt = new NBTItem(tagItem);
                 nbt.setString("identifier", t.getIdentifier());
-
-                //if (menuUtil.getOwner().hasPermission(t.getPermission()) || permission.equalsIgnoreCase("none")) {
-                //    if (SupremeTagsPremium.getInstance().getTagManager().getTagConfig().getInt("tags." + t.getIdentifier() + ".custom-model-data") > 0) {
-                //        int modelData = SupremeTagsPremium.getInstance().getTagManager().getTagConfig().getInt("tags." + t.getIdentifier() + ".custom-model-data");
-                //        if (tagMeta != null)
-                //            tagMeta.setCustomModelData(modelData);
-                //    }
-                //} else {
-                //    if (SupremeTagsPremium.getInstance().getTagManager().getTagConfig().getInt("tags." + t.getIdentifier() + ".locked-tag.custom-model-data") > 0) {
-                //        int modelData = SupremeTagsPremium.getInstance().getTagManager().getTagConfig().getInt("tags." + t.getIdentifier() + ".locked-tag.custom-model-data");
-                //        if (tagMeta != null)
-                //            tagMeta.setCustomModelData(modelData);
-                //    }
-                //}
 
                 assert tagMeta != null;
 

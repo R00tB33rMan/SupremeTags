@@ -5,7 +5,6 @@ import net.noscape.project.supremetags.SupremeTags;
 import net.noscape.project.supremetags.handlers.Tag;
 import net.noscape.project.supremetags.handlers.menu.MenuUtil;
 import net.noscape.project.supremetags.handlers.menu.Paged;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;

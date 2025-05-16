@@ -25,7 +25,7 @@ public class Tag {
 
     public Tag(String identifier, String tag, String description) {
         this.identifier = identifier;
-        this.tag = tag;;
+        this.tag = tag;
         this.description = description;
     }
 }

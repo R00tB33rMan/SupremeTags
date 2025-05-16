@@ -5,10 +5,8 @@
       <configuration>
         <autoDetectTypes>
           <platformType>SPIGOT</platformType>
-          <platformType>PAPER</platformType>
-          <platformType>ADVENTURE</platformType>
-          <platformType>BUKKIT</platformType>
         </autoDetectTypes>
+        <projectReimportVersion>1</projectReimportVersion>
       </configuration>
     </facet>
   </component>

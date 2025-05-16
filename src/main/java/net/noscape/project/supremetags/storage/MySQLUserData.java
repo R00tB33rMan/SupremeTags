@@ -1,12 +1,14 @@
 package net.noscape.project.supremetags.storage;
 
-import net.noscape.project.supremetags.*;
-import org.bukkit.*;
+import net.noscape.project.supremetags.SupremeTags;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.*;
 
-import javax.xml.crypto.Data;
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.UUID;
 
 public class MySQLUserData {
 

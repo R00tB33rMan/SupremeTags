@@ -1,5 +1,6 @@
 package net.noscape.project.supremetags.guis;
 
+import lombok.Getter;
 import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import net.noscape.project.supremetags.*;
 import net.noscape.project.supremetags.handlers.menu.*;
@@ -16,13 +17,15 @@ import static net.noscape.project.supremetags.utils.Utils.*;
 
 public class MainMenu extends Menu {
 
-    private final List<String> catorgies;
+    @Getter
+    private final List<String> categories;
+    @Getter
     private final Map<Integer, String> dataItem = new HashMap<>();
     private final Map<String, Integer> categoriesTags;
 
     public MainMenu(MenuUtil menuUtil) {
         super(menuUtil);
-        this.catorgies = SupremeTags.getInstance().getCategoryManager().getCatorgies();
+        this.categories = SupremeTags.getInstance().getCategoryManager().getCatorgies();
         this.categoriesTags = SupremeTags.getInstance().getCategoryManager().getCatorgiesTags();
     }
 
@@ -50,13 +53,9 @@ public class MainMenu extends Menu {
 
         if (e.getCurrentItem() == null) return;
 
-        for (String cats : getCatorgies()) {
+        for (String cats : getCategories()) {
             if (cats != null) {
-                if (categoriesTags.get(cats) != null) {
-                    hasMinTags = true;
-                } else {
-                    hasMinTags = false;
-                }
+                hasMinTags = categoriesTags.get(cats) != null;
                 break;
             }
         }
@@ -81,8 +80,8 @@ public class MainMenu extends Menu {
 
     @Override
     public void setMenuItems() {
-        // Loop through categories items
-        for (String cats : getCatorgies()) {
+        // Loop through categories' items
+        for (String cats : getCategories()) {
             if (cats != null) {
                 // Fetch category configurations
                 FileConfiguration categoryConfig = SupremeTags.getInstance().getCategoryManager().getCategoryConfig();
@@ -94,7 +93,7 @@ public class MainMenu extends Menu {
 
                 // Check permission
                 if (permission != null && shouldAddItem(menuUtil.getOwner().hasPermission(permission), canSee)) {
-                    ItemStack catItem = createCategoryItem(material, displayName, categoryConfig.getStringList("categories." + cats + ".lore"), categoriesTags.getOrDefault(cats, 0));
+                    ItemStack catItem = createCategoryItem(Objects.requireNonNull(material), displayName, categoryConfig.getStringList("categories." + cats + ".lore"), categoriesTags.getOrDefault(cats, 0));
                     dataItem.put(slot, cats);
                     inventory.setItem(slot, catItem);
                 }
@@ -132,7 +131,7 @@ public class MainMenu extends Menu {
             item = new ItemStack(Material.valueOf(material.toUpperCase()), 1);
         }
 
-        meta = item.getItemMeta();
+        meta = Objects.requireNonNull(item).getItemMeta();
         assert meta != null;
 
         meta.setDisplayName(format(displayName));
@@ -144,14 +143,5 @@ public class MainMenu extends Menu {
 
         item.setItemMeta(meta);
         return item;
-    }
-
-
-    public List<String> getCatorgies() {
-        return catorgies;
-    }
-
-    public Map<Integer, String> getDataItem() {
-        return dataItem;
     }
 }

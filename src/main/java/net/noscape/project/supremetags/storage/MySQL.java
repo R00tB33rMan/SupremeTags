@@ -76,7 +76,7 @@ public class MySQL {
         try {
             Connection connection = this.getConnection();
             if (connection.isClosed() || !connection.isValid(2)) {
-                // If the connection is closed or not valid, obtain a new one
+                // If the connection is closed or not valid, get a new one
                 this.ds.getConnection();
                 this.isConnected = true;
             }

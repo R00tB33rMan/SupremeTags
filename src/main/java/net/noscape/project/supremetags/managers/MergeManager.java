@@ -15,7 +15,7 @@ import static net.noscape.project.supremetags.utils.Utils.msgPlayer;
 public class MergeManager {
 
     /*
-     * SUPPORT TAG PLUGINS:
+     * SUPPORTED TAG PLUGINS FOR CONVERSION:
      * - DeluxeTags
      * - ExternalTags
      */

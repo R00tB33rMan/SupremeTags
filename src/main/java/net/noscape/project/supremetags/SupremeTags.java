@@ -18,7 +18,12 @@ import net.noscape.project.supremetags.managers.CategoryManager;
 import net.noscape.project.supremetags.managers.ConfigManager;
 import net.noscape.project.supremetags.managers.MergeManager;
 import net.noscape.project.supremetags.managers.TagManager;
-import net.noscape.project.supremetags.storage.*;
+import net.noscape.project.supremetags.storage.DataCache;
+import net.noscape.project.supremetags.storage.H2Database;
+import net.noscape.project.supremetags.storage.H2UserData;
+import net.noscape.project.supremetags.storage.MySQL;
+import net.noscape.project.supremetags.storage.MySQLUserData;
+import net.noscape.project.supremetags.storage.UserData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -36,6 +41,7 @@ import java.util.logging.Logger;
 @Getter
 public final class SupremeTags extends JavaPlugin {
 
+    @Getter
     private static SupremeTags instance;
     private ConfigManager configManager;
     private TagManager tagManager;
@@ -47,9 +53,11 @@ public final class SupremeTags extends JavaPlugin {
     private static Economy econ = null;
     private static Permission perms = null;
 
+    @Getter
     private static MySQL mysql;
     private static H2Database h2;
     private final H2UserData h2user = new H2UserData();
+    @Getter
     private static String connectionURL;
     private final MySQLUserData user = new MySQLUserData();
 
@@ -151,13 +159,10 @@ public final class SupremeTags extends JavaPlugin {
 
         api = new SupremeTagsAPI();
 
-        if (tagManager.getTags().size() == 0 || tagManager.getTags().isEmpty()) {
+        if (tagManager.getTags().isEmpty()) {
             tagManager.loadTags();
         }
     }
-
-    public static SupremeTags getInstance() { return instance; }
-
 
     public static MenuUtil getMenuUtil(Player player) {
         MenuUtil menuUtil;
@@ -202,10 +207,6 @@ public final class SupremeTags extends JavaPlugin {
         return menuUtilMap;
     }
 
-    public static String getConnectionURL() {
-        return connectionURL;
-    }
-
     public H2UserData getUserData() { return h2user; }
 
     public static H2Database getDatabase() { return h2; }
@@ -213,11 +214,6 @@ public final class SupremeTags extends JavaPlugin {
     public MySQLUserData getUser() {
         return instance.user;
     }
-
-    public static MySQL getMysql() {
-        return mysql;
-    }
-
 
     public void reload() {
         // Reload the config.yml
@@ -343,13 +339,13 @@ public final class SupremeTags extends JavaPlugin {
             return false;
         }
         econ = rsp.getProvider();
-        return econ != null;
+        return true;
     }
 
     private boolean setupPermissions() {
         RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
-        perms = rsp.getProvider();
-        return perms != null;
+        perms = Objects.requireNonNull(rsp).getProvider();
+        return true;
     }
 
     public static Economy getEconomy() {
@@ -362,10 +358,6 @@ public final class SupremeTags extends JavaPlugin {
 
     public static SupremeTagsAPI getTagAPI() {
         return api;
-    }
-
-    public ConfigManager getConfigManager() {
-        return configManager;
     }
 
     private void deleteCurrentLatestConfig() {

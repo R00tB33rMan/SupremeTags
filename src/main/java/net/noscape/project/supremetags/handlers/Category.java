@@ -1,7 +1,11 @@
 package net.noscape.project.supremetags.handlers;
 
-import java.util.*;
+import lombok.Getter;
+import lombok.Setter;
+import java.util.List;
 
+@Setter
+@Getter
 public class Category {
 
     private String category;
@@ -9,22 +13,6 @@ public class Category {
 
     public Category(String category, List<String> tags) {
         this.category = category;
-        this.tags = tags;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public List<String> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<String> tags) {
         this.tags = tags;
     }
 }

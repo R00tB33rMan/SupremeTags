@@ -56,7 +56,7 @@ public class CategoryMenu extends Paged {
         String insufficient = SupremeTags.getInstance().getConfig().getString("messages.insufficient-funds");
         String unlocked = SupremeTags.getInstance().getConfig().getString("messages.tag-unlocked");
 
-        if (e.getCurrentItem().getType().equals(Material.valueOf(Objects.requireNonNull(SupremeTags.getInstance().getConfig().getString("gui.layout.glass-material")).toUpperCase()))) {
+        if (Objects.requireNonNull(e.getCurrentItem()).getType().equals(Material.valueOf(Objects.requireNonNull(SupremeTags.getInstance().getConfig().getString("gui.layout.glass-material")).toUpperCase()))) {
             e.setCancelled(true);
         }
 
@@ -92,7 +92,7 @@ public class CategoryMenu extends Paged {
                         menuUtil.setIdentifier(tagevent.getTag());
 
                         if (SupremeTags.getInstance().getConfig().getBoolean("settings.gui-messages")) {
-                            msgPlayer(player, SupremeTags.getInstance().getConfig().getString("messages.tag-select-message").replace("%identifier%", identifier));
+                            msgPlayer(player, Objects.requireNonNull(SupremeTags.getInstance().getConfig().getString("messages.tag-select-message")).replace("%identifier%", identifier));
                         }
                     } else {
                         msgPlayer(player, SupremeTags.getInstance().getConfig().getString("messages.locked-tag"));
@@ -111,13 +111,13 @@ public class CategoryMenu extends Paged {
                         menuUtil.setIdentifier(tagevent.getTag());
 
                         if (SupremeTags.getInstance().getConfig().getBoolean("settings.gui-messages")) {
-                            msgPlayer(player, SupremeTags.getInstance().getConfig().getString("messages.tag-select-message").replace("%identifier%", identifier));
+                            msgPlayer(player, Objects.requireNonNull(SupremeTags.getInstance().getConfig().getString("messages.tag-select-message")).replace("%identifier%", identifier));
                         }
                     }
                 } else {
                     double cost = t.getCost();
 
-                    // check if they have the right amount of money to buy etc....
+                    // check if they have the right amount of money to buy, etc...
                     if (hasAmount(player, cost)) {
                         // give them the tag
 
@@ -128,10 +128,10 @@ public class CategoryMenu extends Paged {
 
                         take(player, cost);
                         addPerm(player, t.getPermission());
-                        msgPlayer(player, unlocked.replaceAll("%identifier%", t.getIdentifier()));
+                        msgPlayer(player, Objects.requireNonNull(unlocked).replaceAll("%identifier%", t.getIdentifier()));
                         super.open();
                     } else {
-                        msgPlayer(player, insufficient.replaceAll("%cost%", String.valueOf(t.getCost())));
+                        msgPlayer(player, Objects.requireNonNull(insufficient).replaceAll("%cost%", String.valueOf(t.getCost())));
                     }
                 }
             }
@@ -276,13 +276,11 @@ public class CategoryMenu extends Paged {
                     material = "NAME_TAG";
                 }
 
-                assert permission != null;
-
                 ItemStack tagItem;
                 ItemMeta tagMeta;
                 NBTItem nbt;
 
-                if (material.contains("hdb-")) {
+                if (Objects.requireNonNull(material).contains("hdb-")) {
                     int id = Integer.parseInt(material.replace("hdb-", ""));
                     HeadDatabaseAPI api = new HeadDatabaseAPI();
                     tagItem = api.getItemHead(String.valueOf(id));
@@ -294,7 +292,7 @@ public class CategoryMenu extends Paged {
                 } else if (material.contains("itemsadder-")) {
                     String id = material.replace("itemsadder-", "");
                     tagItem = getItemWithIA(id);
-                    tagMeta = tagItem.getItemMeta();
+                    tagMeta = Objects.requireNonNull(tagItem).getItemMeta();
                 } else {
                     tagItem = new ItemStack(Material.valueOf(material.toUpperCase()), 1);
                     tagMeta = tagItem.getItemMeta();
@@ -302,20 +300,6 @@ public class CategoryMenu extends Paged {
 
                 nbt = new NBTItem(tagItem);
                 nbt.setString("identifier", t.getIdentifier());
-
-                //if (menuUtil.getOwner().hasPermission(t.getPermission()) || permission.equalsIgnoreCase("none")) {
-                //    if (SupremeTagsPremium.getInstance().getTagManager().getTagConfig().getInt("tags." + t.getIdentifier() + ".custom-model-data") > 0) {
-                //        int modelData = SupremeTagsPremium.getInstance().getTagManager().getTagConfig().getInt("tags." + t.getIdentifier() + ".custom-model-data");
-                //        if (tagMeta != null)
-                //            tagMeta.setCustomModelData(modelData);
-                //    }
-                //} else {
-                //    if (SupremeTagsPremium.getInstance().getTagManager().getTagConfig().getInt("tags." + t.getIdentifier() + ".locked-tag.custom-model-data") > 0) {
-                //        int modelData = SupremeTagsPremium.getInstance().getTagManager().getTagConfig().getInt("tags." + t.getIdentifier() + ".locked-tag.custom-model-data");
-                //        if (tagMeta != null)
-                //            tagMeta.setCustomModelData(modelData);
-                //    }
-                //}
 
                 assert tagMeta != null;
 

@@ -5,11 +5,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class ConfigManager {
 
     private final JavaPlugin plugin;
-    private HashMap<String, Config> configs = new HashMap<>();
+    private final HashMap<String, Config> configs = new HashMap<>();
 
     public ConfigManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -25,7 +26,7 @@ public class ConfigManager {
      * @return the Config object
      */
     public Config getConfig(String name) {
-        return configs.computeIfAbsent(name, key -> new Config(key));
+        return configs.computeIfAbsent(name, Config::new);
     }
 
     /**
@@ -85,7 +86,7 @@ public class ConfigManager {
         }
 
         /**
-         * Gets the YamlConfiguration instance of this config, loading from file if necessary
+         * Gets the YamlConfiguration instance of this config, loading from the file if necessary
          *
          * @return YamlConfiguration instance
          */
@@ -110,7 +111,7 @@ public class ConfigManager {
         }
 
         /**
-         * Reloads the config from file
+         * Reloads the config from the file
          */
         public void reload() {
             if (name == null || name.isEmpty()) {
@@ -119,12 +120,10 @@ public class ConfigManager {
             this.file = new File(plugin.getDataFolder(), this.name);
             this.config = YamlConfiguration.loadConfiguration(file);
 
-            try (Reader defConfigStream = new InputStreamReader(plugin.getResource(name), "UTF8")) {
-                if (defConfigStream != null) {
-                    YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-                    config.setDefaults(defConfig);
-                    config.options().copyDefaults(false); // Do not overwrite existing values
-                }
+            try (Reader defConfigStream = new InputStreamReader(Objects.requireNonNull(plugin.getResource(name)), "UTF8")) {
+                YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+                config.setDefaults(defConfig);
+                config.options().copyDefaults(false); // Do not overwrite existing values
             } catch (IOException | NullPointerException e) {
                 e.printStackTrace();
             }

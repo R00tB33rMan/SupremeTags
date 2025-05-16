@@ -1,9 +1,14 @@
 package net.noscape.project.supremetags.storage;
 
-import net.noscape.project.supremetags.*;
+import lombok.Getter;
+import net.noscape.project.supremetags.SupremeTags;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
+@Getter
 public class H2Database {
 
     private final String ConnectionURL;
@@ -40,9 +45,5 @@ public class H2Database {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-    }
-
-    public String getConnectionURL() {
-        return ConnectionURL;
     }
 }

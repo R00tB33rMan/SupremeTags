@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -12,12 +13,21 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 
 import javax.net.ssl.HttpsURLConnection;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.zip.GZIPOutputStream;
@@ -25,9 +35,8 @@ import java.util.zip.GZIPOutputStream;
 /**
  * bStats collects some data for plugin authors.
  * <p>
- * Check out https://bStats.org/ to learn more about bStats!
+ * Check out <a href="https://bStats.org/">...</a> to learn more about bStats!
  */
-@SuppressWarnings({"WeakerAccess"})
 public class Metrics {
 
     static {
@@ -37,7 +46,7 @@ public class Metrics {
             final String defaultPackage = new String(
                     new byte[]{'o', 'r', 'g', '.', 'b', 's', 't', 'a', 't', 's', '.', 'b', 'u', 'k', 'k', 'i', 't'});
             final String examplePackage = new String(new byte[]{'y', 'o', 'u', 'r', '.', 'p', 'a', 'c', 'k', 'a', 'g', 'e'});
-            // We want to make sure nobody just copy & pastes the example and use the wrong package names
+            // We want to make sure nobody just copies and pastes the example and uses the wrong package names
             if (Metrics.class.getPackage().getName().equals(defaultPackage) || Metrics.class.getPackage().getName().equals(examplePackage)) {
                 throw new IllegalStateException("bStats Metrics class has not been relocated correctly!");
             }
@@ -50,13 +59,18 @@ public class Metrics {
     // The url to which the data is sent
     private static final String URL = "https://bStats.org/submitData/bukkit";
 
+    /**
+     * -- GETTER --
+     *  Checks if bStats is enabled.
+     */
     // Is bStats enabled on this server?
-    private boolean enabled;
+    @Getter
+    private final boolean enabled;
 
     // Should failed requests be logged?
     private static boolean logFailedRequests;
 
-    // Should the sent data be logged?
+    // Should the "sent" data be logged?
     private static boolean logSentData;
 
     // Should the response text be logged?
@@ -109,10 +123,11 @@ public class Metrics {
 
             // Inform the server owners about bStats
             config.options().header(
-                    "bStats collects some data for plugin authors like how many servers are using their plugins.\n" +
-                            "To honor their work, you should not disable it.\n" +
-                            "This has nearly no effect on the server performance!\n" +
-                            "Check out https://bStats.org/ to learn more :)"
+                """
+                        bStats collects some data for plugin authors like how many servers are using their plugins.
+                        To honor their work, you should not disable it.
+                        This has nearly no effect on the server performance!
+                        Check out https://bStats.org/ to learn more :)"""
             ).copyDefaults(true);
             try {
                 config.save(configFile);
@@ -148,15 +163,6 @@ public class Metrics {
     }
 
     /**
-     * Checks if bStats is enabled.
-     *
-     * @return Whether bStats is enabled or not.
-     */
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    /**
      * Adds a custom chart.
      *
      * @param chart The chart to add.
@@ -172,26 +178,20 @@ public class Metrics {
      * Starts the Scheduler which submits our data every 30 minutes.
      */
     private void startSubmitting() {
-        final Timer timer = new Timer(true); // We use a timer cause the Bukkit scheduler is affected by server lags
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (!plugin.isEnabled()) { // Plugin was disabled
-                    timer.cancel();
-                    return;
-                }
-                // Nevertheless we want our code to run in the Bukkit main thread, so we have to use the Bukkit scheduler
-                // Don't be afraid! The connection to the bStats server is still async, only the stats collection is sync ;)
-                Bukkit.getScheduler().runTask(plugin, () -> submitData());
+        Bukkit.getGlobalRegionScheduler().runAtFixedRate(plugin, task -> {
+            if (!plugin.isEnabled()) { // Plugin was disabled
+                task.cancel();
+                return;
             }
-        }, 1000 * 60 * 5, 1000 * 60 * 30);
+            submitData();
+        }, 5 * 60 * 20, 30 * 60 * 20);
         // Submit the data every 30 minutes, first time after 5 minutes to give other plugins enough time to start
-        // WARNING: Changing the frequency has no effect but your plugin WILL be blocked/deleted!
+        // WARNING: Changing the frequency has no effect, but your plugin WILL be blocked/deleted!
         // WARNING: Just don't do it!
     }
 
     /**
-     * Gets the plugin specific data.
+     * Gets the plugin-specific data.
      * This method is called using Reflection.
      *
      * @return The plugin specific data.
@@ -267,7 +267,7 @@ public class Metrics {
     }
 
     /**
-     * Collects the data and sends it afterwards.
+     * Collects the data and sends it afterward.
      */
     private void submitData() {
         final JsonObject data = getServerData();
@@ -417,7 +417,7 @@ public class Metrics {
             try {
                 JsonObject data = getChartData();
                 if (data == null) {
-                    // If the data is null we don't send the chart.
+                    // If the data is null, we don't send the chart.
                     return null;
                 }
                 chart.add("data", data);

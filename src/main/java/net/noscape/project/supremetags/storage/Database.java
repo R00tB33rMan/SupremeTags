@@ -1,10 +1,15 @@
 package net.noscape.project.supremetags.storage;
 
-import net.noscape.project.supremetags.*;
-import org.bukkit.*;
+import lombok.Getter;
+import net.noscape.project.supremetags.SupremeTags;
+import org.bukkit.Bukkit;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
+@Getter
 public class Database {
 
     private final String ConnectionURL;
@@ -41,9 +46,5 @@ public class Database {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-    }
-
-    public String getConnectionURL() {
-        return ConnectionURL;
     }
 }

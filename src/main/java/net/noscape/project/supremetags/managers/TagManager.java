@@ -1,22 +1,33 @@
 package net.noscape.project.supremetags.managers;
 
-import net.noscape.project.supremetags.*;
+import lombok.Getter;
+import lombok.Setter;
 
+import net.noscape.project.supremetags.SupremeTags;
 import net.noscape.project.supremetags.handlers.Tag;
-import org.bukkit.*;
-import org.bukkit.command.*;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static net.noscape.project.supremetags.utils.Utils.msgPlayer;
 
 public class TagManager {
 
+    @Getter
     private final Map<String, Tag> tags = new HashMap<>();
+    @Getter
     private final Map<Integer, String> dataItem = new HashMap<>();
 
+    @Setter
+    @Getter
     private boolean isCost;
 
     private final String reload = SupremeTags.getInstance().getConfig().getString("messages.reload");
@@ -193,11 +204,6 @@ public class TagManager {
         }
     }
 
-    public Map<String, Tag> getTags() {
-        return tags;
-    }
-    public Map<Integer, String> getDataItem() { return dataItem; }
-
     public void setTag(Player player, String identifier, String tag) {
         if (tags.containsKey(identifier)) {
             Tag t = tags.get(identifier);
@@ -264,14 +270,6 @@ public class TagManager {
 
         // Add all the entries from the tags map to the sorted set
         sortedSet.addAll(tags.entrySet());
-    }
-
-    public boolean isCost() {
-        return isCost;
-    }
-
-    public void setCost(boolean isCost) {
-        this.isCost = isCost;
     }
 
     public void saveTag(Tag tag) {

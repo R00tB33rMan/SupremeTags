@@ -1,17 +1,22 @@
 package net.noscape.project.supremetags.listeners;
 
-import net.noscape.project.supremetags.*;
+import lombok.Getter;
+import net.noscape.project.supremetags.SupremeTags;
 import net.noscape.project.supremetags.checkers.UpdateChecker;
-import net.noscape.project.supremetags.handlers.*;
-import net.noscape.project.supremetags.storage.*;
-import org.bukkit.entity.*;
-import org.bukkit.event.*;
-import org.bukkit.event.player.*;
+import net.noscape.project.supremetags.handlers.Tag;
+import net.noscape.project.supremetags.storage.UserData;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.util.*;
+import java.util.Map;
 
 import static net.noscape.project.supremetags.utils.Utils.*;
 
+@Getter
 public class PlayerEvents implements Listener {
 
     private final Map<String, Tag> tags;
@@ -91,7 +96,4 @@ public class PlayerEvents implements Listener {
         }
     }
 
-    public Map<String, Tag> getTags() {
-        return tags;
-    }
 }
